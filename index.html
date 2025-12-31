@@ -33,6 +33,7 @@ button{
   padding:15px;
   border-radius:15px;
   box-shadow:0 4px 10px rgba(0,0,0,0.2);
+  position: relative;
 }
 .card img{
   width:100%;
@@ -46,6 +47,28 @@ button{
 .card h3{
   color:#b22222;
   margin:10px 0 5px;
+}
+.card p{
+  color:#333;
+  text-align:left;
+  font-size:14px;
+  margin-top:5px;
+}
+/* ใส่หมายเลขไพ่มุมบนซ้าย */
+.card::before {
+  content: attr(data-number);
+  position: absolute;
+  top:10px;
+  left:10px;
+  background:#b22222;
+  color:white;
+  width:25px;
+  height:25px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+  font-weight:bold;
 }
 </style>
 </head>
@@ -62,94 +85,93 @@ button{
 const baseImg = "https://raw.githubusercontent.com/hayeah/playing-cards-assets/master/png/tarot/";
 
 const tarotDeck = [
+  // Major Arcana
+  {n:"The Fool",i:"the_fool.png",m:"ความรักที่เริ่มจากความรู้สึกบริสุทธิ์ ไม่คาดหวังมาก เปิดใจได้ แม้ยังไม่รู้ปลายทาง"},
+  {n:"The Magician",i:"the_magician.png",m:"ความรักที่เกิดจากการสื่อสารและเสน่ห์ คุณสามารถสร้างความรักที่ต้องการได้"},
+  {n:"The High Priestess",i:"the_high_priestess.png",m:"ความรู้สึกซ่อนอยู่ ต้องใช้สัญชาตญาณมากกว่าเหตุผล"},
+  {n:"The Empress",i:"the_empress.png",m:"ความรักที่อบอุ่น อ่อนโยน และเอาใจใส่ มีโอกาสพัฒนาระยะยาว"},
+  {n:"The Emperor",i:"the_emperor.png",m:"ความรักที่มั่นคง จริงจัง คนพร้อมรับผิดชอบ"},
+  {n:"The Hierophant",i:"the_hierophant.png",m:"ความสัมพันธ์ที่เป็นทางการ ผู้ใหญ่ยอมรับ"},
+  {n:"The Lovers",i:"the_lovers.png",m:"แรงดึงดูดสูง ต้องตัดสินใจด้วยหัวใจซื่อสัตย์"},
+  {n:"The Chariot",i:"the_chariot.png",m:"ความรักเดินหน้า แม้อุปสรรค ยังไปต่อได้"},
+  {n:"Strength",i:"strength.png",m:"ต้องใช้ความอดทน ความเข้าใจ และควบคุมอารมณ์"},
+  {n:"The Hermit",i:"the_hermit.png",m:"ช่วงเวลาทบทวนหัวใจ ต้องอยู่กับตัวเอง"},
+  {n:"Wheel of Fortune",i:"wheel_of_fortune.png",m:"ความรักเปลี่ยนแปลงตามโชคชะตา"},
+  {n:"Justice",i:"justice.png",m:"ความรักต้องชัดเจน ยุติธรรม และจริงใจ"},
+  {n:"The Hanged Man",i:"the_hanged_man.png",m:"การรอคอยหรือเสียสละเพื่อความรัก"},
+  {n:"Death",i:"death.png",m:"การจบเพื่อเริ่มใหม่ ปล่อยสิ่งไม่ดี"},
+  {n:"Temperance",i:"temperance.png",m:"ความรักต้องปรับตัว ประนีประนอม หาจุดสมดุล"},
+  {n:"The Devil",i:"the_devil.png",m:"ความหลงใหล ผูกพันลึก ระวังความเป็นพิษ"},
+  {n:"The Tower",i:"the_tower.png",m:"เหตุการณ์ฉับพลัน ความรักสั่นคลอน"},
+  {n:"The Star",i:"the_star.png",m:"ความหวัง การเยียวยาหัวใจ ความรักฟื้นฟู"},
+  {n:"The Moon",i:"the_moon.png",m:"ความไม่แน่นอน ลังเล สับสนทางใจ"},
+  {n:"The Sun",i:"the_sun.png",m:"ความรักสดใส มีความสุข เปิดเผย"},
+  {n:"Judgement",i:"judgement.png",m:"การตัดสินใจครั้งสำคัญในความรัก"},
+  {n:"The World",i:"the_world.png",m:"ความรักสมบูรณ์ ลงตัว ถึงจุดหมาย"},
 
-/* ===== Major Arcana ===== */
-{n:"The Fool",i:"the_fool.png",m:"ความรักที่เริ่มจากความรู้สึกบริสุทธิ์ ไม่คาดหวังมาก ไพ่ใบนี้บอกว่าคุณหรือเขาอาจพร้อมเปิดใจอีกครั้ง แม้จะยังไม่รู้ปลายทาง แต่เป็นการเริ่มต้นที่มีความหวัง"},
-{n:"The Magician",i:"the_magician.png",m:"ความรักที่เกิดจากการสื่อสาร เสน่ห์ และความตั้งใจ หากคุณอยากได้ความรักแบบไหน ไพ่ใบนี้บอกว่าคุณสามารถสร้างมันขึ้นมาได้"},
-{n:"The High Priestess",i:"the_high_priestess.png",m:"ความรู้สึกที่ยังซ่อนอยู่ มีบางอย่างยังไม่ถูกพูดออกมา ความรักครั้งนี้ต้องใช้สัญชาตญาณมากกว่าเหตุผล"},
-{n:"The Empress",i:"the_empress.png",m:"ความรักที่อบอุ่น อ่อนโยน เต็มไปด้วยการดูแล เอาใจใส่ มีโอกาสพัฒนาเป็นความสัมพันธ์ระยะยาว"},
-{n:"The Emperor",i:"the_emperor.png",m:"ความรักที่จริงจัง มั่นคง แต่อาจดูแข็ง ไพ่ใบนี้สะท้อนคนที่พร้อมรับผิดชอบในความสัมพันธ์"},
-{n:"The Hierophant",i:"the_hierophant.png",m:"ความสัมพันธ์ที่เป็นทางการ ความรักที่ผู้ใหญ่ยอมรับ หรือมีกรอบกติกาชัดเจน"},
-{n:"The Lovers",i:"the_lovers.png",m:"ความรักที่มีแรงดึงดูดสูง แต่ต้องมีการตัดสินใจสำคัญ เลือกด้วยหัวใจที่ซื่อสัตย์"},
-{n:"The Chariot",i:"the_chariot.png",m:"ความรักที่กำลังเดินหน้า แม้จะมีอุปสรรคแต่ยังไปต่อได้ถ้ามีเป้าหมายเดียวกัน"},
-{n:"Strength",i:"strength.png",m:"ความรักที่ต้องใช้ความอดทน ความเข้าใจ และการควบคุมอารมณ์"},
-{n:"The Hermit",i:"the_hermit.png",m:"ช่วงเวลาที่ต้องอยู่กับตัวเอง ทบทวนว่าหัวใจต้องการอะไรจริง ๆ"},
-{n:"Wheel of Fortune",i:"wheel_of_fortune.png",m:"ความรักที่เปลี่ยนแปลงตามโชคชะตา สิ่งที่คาดไม่ถึงกำลังจะเกิด"},
-{n:"Justice",i:"justice.png",m:"ความรักที่ต้องการความชัดเจน ความยุติธรรม และความจริงใจ"},
-{n:"The Hanged Man",i:"the_hanged_man.png",m:"การรอคอยหรือการยอมเสียสละเพื่อความรัก"},
-{n:"Death",i:"death.png",m:"การจบเพื่อเริ่มใหม่ ความรักที่ต้องปล่อยเพื่อให้สิ่งที่ดีกว่าเข้ามา"},
-{n:"Temperance",i:"temperance.png",m:"ความรักที่ต้องปรับตัว ประนีประนอม และหาจุดสมดุล"},
-{n:"The Devil",i:"the_devil.png",m:"ความหลงใหล ผูกพันลึก แต่ต้องระวังความเป็นพิษ"},
-{n:"The Tower",i:"the_tower.png",m:"เหตุการณ์ฉับพลัน ความรักสั่นคลอน แต่เป็นความจริงที่ต้องเผชิญ"},
-{n:"The Star",i:"the_star.png",m:"ความหวัง การเยียวยาหัวใจ ความรักที่ค่อย ๆ ฟื้นฟู"},
-{n:"The Moon",i:"the_moon.png",m:"ความไม่แน่นอน ความลังเล และความสับสนทางใจ"},
-{n:"The Sun",i:"the_sun.png",m:"ความรักที่สดใส มีความสุข และเปิดเผย"},
-{n:"Judgement",i:"judgement.png",m:"การตัดสินใจครั้งสำคัญในความรัก"},
-{n:"The World",i:"the_world.png",m:"ความรักที่สมบูรณ์ ลงตัว และถึงจุดหมาย"},
+  // Wands
+  {n:"Ace of Wands",i:"ace_of_wands.png",m:"แรงดึงดูดใหม่"},
+  {n:"Two of Wands",i:"two_of_wands.png",m:"วางแผนอนาคต"},
+  {n:"Three of Wands",i:"three_of_wands.png",m:"รอการพัฒนาความสัมพันธ์"},
+  {n:"Four of Wands",i:"four_of_wands.png",m:"ความสัมพันธ์มั่นคง"},
+  {n:"Five of Wands",i:"five_of_wands.png",m:"ความขัดแย้งเล็กน้อย"},
+  {n:"Six of Wands",i:"six_of_wands.png",m:"ความสำเร็จในความรัก"},
+  {n:"Seven of Wands",i:"seven_of_wands.png",m:"ต้องปกป้องความรัก"},
+  {n:"Eight of Wands",i:"eight_of_wands.png",m:"ความรักคืบเร็ว"},
+  {n:"Nine of Wands",i:"nine_of_wands.png",m:"เหนื่อยแต่ยังสู้"},
+  {n:"Ten of Wands",i:"ten_of_wands.png",m:"ความรักหนักใจ"},
+  {n:"Page of Wands",i:"page_of_wands.png",m:"คนไฟแรง น่าตื่นเต้น"},
+  {n:"Knight of Wands",i:"knight_of_wands.png",m:"รักเร็วแรง"},
+  {n:"Queen of Wands",i:"queen_of_wands.png",m:"เสน่ห์แรง"},
+  {n:"King of Wands",i:"king_of_wands.png",m:"ผู้นำ มีแพชชั่น"},
 
-/* ===== Cups ===== */
-{n:"Ace of Cups",i:"ace_of_cups.png",m:"รักใหม่ ความรู้สึกที่เริ่มต้นจากใจ"},
-{n:"Two of Cups",i:"two_of_cups.png",m:"ความรักที่สมดุล ต่างฝ่ายต่างรู้สึกตรงกัน"},
-{n:"Three of Cups",i:"three_of_cups.png",m:"ความสุข การเฉลิมฉลอง หรือมือที่สาม"},
-{n:"Four of Cups",i:"four_of_cups.png",m:"ความเบื่อ ความไม่แน่ใจในความรัก"},
-{n:"Five of Cups",i:"five_of_cups.png",m:"ความเสียใจ ผิดหวังจากอดีต"},
-{n:"Six of Cups",i:"six_of_cups.png",m:"ความรักเก่า ความทรงจำเก่า"},
-{n:"Seven of Cups",i:"seven_of_cups.png",m:"ตัวเลือกเยอะ ความลังเล"},
-{n:"Eight of Cups",i:"eight_of_cups.png",m:"การเดินออกจากความสัมพันธ์ที่ไม่เติมเต็ม"},
-{n:"Nine of Cups",i:"nine_of_cups.png",m:"ความสมหวัง พึงพอใจในความรัก"},
-{n:"Ten of Cups",i:"ten_of_cups.png",m:"ความสุข ความรักแบบครอบครัว"},
-{n:"Page of Cups",i:"page_of_cups.png",m:"คนอ่อนโยน ความรักแบบใส ๆ"},
-{n:"Knight of Cups",i:"knight_of_cups.png",m:"คนโรแมนติก การเข้ามาจีบ"},
-{n:"Queen of Cups",i:"queen_of_cups.png",m:"ความเข้าใจ เอาใจใส่"},
-{n:"King of Cups",i:"king_of_cups.png",m:"ความรักที่มั่นคง ควบคุมอารมณ์ได้ดี"},
+  // Cups
+  {n:"Ace of Cups",i:"ace_of_cups.png",m:"รักใหม่ เริ่มจากใจ"},
+  {n:"Two of Cups",i:"two_of_cups.png",m:"ความรักสมดุล ต่างฝ่ายตรงกัน"},
+  {n:"Three of Cups",i:"three_of_cups.png",m:"ความสุข การเฉลิมฉลอง"},
+  {n:"Four of Cups",i:"four_of_cups.png",m:"ความเบื่อ ไม่แน่ใจ"},
+  {n:"Five of Cups",i:"five_of_cups.png",m:"ความเสียใจ ผิดหวัง"},
+  {n:"Six of Cups",i:"six_of_cups.png",m:"ความรักเก่า ความทรงจำ"},
+  {n:"Seven of Cups",i:"seven_of_cups.png",m:"ตัวเลือกเยอะ ลังเล"},
+  {n:"Eight of Cups",i:"eight_of_cups.png",m:"เดินออกจากความสัมพันธ์ไม่เติมเต็ม"},
+  {n:"Nine of Cups",i:"nine_of_cups.png",m:"ความสมหวัง พึงพอใจ"},
+  {n:"Ten of Cups",i:"ten_of_cups.png",m:"ความสุขครอบครัว"},
+  {n:"Page of Cups",i:"page_of_cups.png",m:"คนอ่อนโยน ความรักใสๆ"},
+  {n:"Knight of Cups",i:"knight_of_cups.png",m:"คนโรแมนติก การเข้ามาจีบ"},
+  {n:"Queen of Cups",i:"queen_of_cups.png",m:"เข้าใจ เอาใจใส่"},
+  {n:"King of Cups",i:"king_of_cups.png",m:"ความรักมั่นคง ควบคุมอารมณ์"},
 
-/* ===== Pentacles ===== */
-{n:"Ace of Pentacles",i:"ace_of_pentacles.png",m:"ความมั่นคงใหม่ในความรัก"},
-{n:"Two of Pentacles",i:"two_of_pentacles.png",m:"แบ่งเวลาไม่ลงตัว"},
-{n:"Three of Pentacles",i:"three_of_pentacles.png",m:"ร่วมมือสร้างความสัมพันธ์"},
-{n:"Four of Pentacles",i:"four_of_pentacles.png",m:"ความหวง ความยึดติด"},
-{n:"Five of Pentacles",i:"five_of_pentacles.png",m:"ความเหงา ขาดการดูแล"},
-{n:"Six of Pentacles",i:"six_of_pentacles.png",m:"การให้และรับที่สมดุล"},
-{n:"Seven of Pentacles",i:"seven_of_pentacles.png",m:"รอผลลัพธ์ของความพยายาม"},
-{n:"Eight of Pentacles",i:"eight_of_pentacles.png",m:"ตั้งใจพัฒนาความรัก"},
-{n:"Nine of Pentacles",i:"nine_of_pentacles.png",m:"รักตัวเอง เป็นอิสระ"},
-{n:"Ten of Pentacles",i:"ten_of_pentacles.png",m:"ความรักมั่นคงระยะยาว"},
-{n:"Page of Pentacles",i:"page_of_pentacles.png",m:"เริ่มจริงจังกับความสัมพันธ์"},
-{n:"Knight of Pentacles",i:"knight_of_pentacles.png",m:"ช้าแต่มั่นคง"},
-{n:"Queen of Pentacles",i:"queen_of_pentacles.png",m:"ดูแล เอาใจใส่"},
-{n:"King of Pentacles",i:"king_of_pentacles.png",m:"พร้อมสร้างอนาคตร่วมกัน"},
+  // Swords
+  {n:"Ace of Swords",i:"ace_of_swords.png",m:"ความจริงต้องพูดออกมา"},
+  {n:"Two of Swords",i:"two_of_swords.png",m:"การตัดสินใจยาก"},
+  {n:"Three of Swords",i:"three_of_swords.png",m:"อกหัก เจ็บปวด"},
+  {n:"Four of Swords",i:"four_of_swords.png",m:"พักใจจากความรัก"},
+  {n:"Five of Swords",i:"five_of_swords.png",m:"ทะเลาะ ขัดแย้ง"},
+  {n:"Six of Swords",i:"six_of_swords.png",m:"ก้าวผ่านอดีต"},
+  {n:"Seven of Swords",i:"seven_of_swords.png",m:"ปิดบัง ไม่ซื่อสัตย์"},
+  {n:"Eight of Swords",i:"eight_of_swords.png",m:"คิดมาก รู้สึกติดกับดัก"},
+  {n:"Nine of Swords",i:"nine_of_swords.png",m:"ความกังวล นอนไม่หลับ"},
+  {n:"Ten of Swords",i:"ten_of_swords.png",m:"การจบที่เจ็บปวด"},
+  {n:"Page of Swords",i:"page_of_swords.png",m:"อยากรู้ อยากสื่อสาร"},
+  {n:"Knight of Swords",i:"knight_of_swords.png",m:"ใจร้อน พูดตรง"},
+  {n:"Queen of Swords",i:"queen_of_swords.png",m:"ใช้เหตุผลนำใจ"},
+  {n:"King of Swords",i:"king_of_swords.png",m:"ความจริงจัง ชัดเจน"},
 
-/* ===== Swords ===== */
-{n:"Ace of Swords",i:"ace_of_swords.png",m:"ความจริงที่ต้องพูดออกมา"},
-{n:"Two of Swords",i:"two_of_swords.png",m:"การตัดสินใจยาก"},
-{n:"Three of Swords",i:"three_of_swords.png",m:"อกหัก เจ็บปวด"},
-{n:"Four of Swords",i:"four_of_swords.png",m:"พักใจจากความรัก"},
-{n:"Five of Swords",i:"five_of_swords.png",m:"การทะเลาะ ความขัดแย้ง"},
-{n:"Six of Swords",i:"six_of_swords.png",m:"ก้าวผ่านอดีต"},
-{n:"Seven of Swords",i:"seven_of_swords.png",m:"การปิดบัง ไม่ซื่อสัตย์"},
-{n:"Eight of Swords",i:"eight_of_swords.png",m:"คิดมาก รู้สึกติดกับดัก"},
-{n:"Nine of Swords",i:"nine_of_swords.png",m:"ความกังวล นอนไม่หลับ"},
-{n:"Ten of Swords",i:"ten_of_swords.png",m:"การจบที่เจ็บปวด"},
-{n:"Page of Swords",i:"page_of_swords.png",m:"อยากรู้ อยากสื่อสาร"},
-{n:"Knight of Swords",i:"knight_of_swords.png",m:"ใจร้อน พูดตรง"},
-{n:"Queen of Swords",i:"queen_of_swords.png",m:"ใช้เหตุผลนำใจ"},
-{n:"King of Swords",i:"king_of_swords.png",m:"ความจริงจัง ชัดเจน"},
-
-/* ===== Wands ===== */
-{n:"Ace of Wands",i:"ace_of_wands.png",m:"แรงดึงดูดใหม่"},
-{n:"Two of Wands",i:"two_of_wands.png",m:"วางแผนอนาคต"},
-{n:"Three of Wands",i:"three_of_wands.png",m:"รอการพัฒนา"},
-{n:"Four of Wands",i:"four_of_wands.png",m:"ความสัมพันธ์มั่นคง"},
-{n:"Five of Wands",i:"five_of_wands.png",m:"ความขัดแย้งเล็กน้อย"},
-{n:"Six of Wands",i:"six_of_wands.png",m:"ความสำเร็จในความรัก"},
-{n:"Seven of Wands",i:"seven_of_wands.png",m:"ต้องปกป้องความรัก"},
-{n:"Eight of Wands",i:"eight_of_wands.png",m:"ความรักคืบเร็ว"},
-{n:"Nine of Wands",i:"nine_of_wands.png",m:"เหนื่อยแต่ยังสู้"},
-{n:"Ten of Wands",i:"ten_of_wands.png",m:"ความรักที่หนักใจ"},
-{n:"Page of Wands",i:"page_of_wands.png",m:"คนไฟแรง น่าตื่นเต้น"},
-{n:"Knight of Wands",i:"knight_of_wands.png",m:"รักเร็วแรง"},
-{n:"Queen of Wands",i:"queen_of_wands.png",m:"เสน่ห์แรง"},
-{n:"King of Wands",i:"king_of_wands.png",m:"ผู้นำ มีแพชชั่น"}
+  // Pentacles
+  {n:"Ace of Pentacles",i:"ace_of_pentacles.png",m:"ความมั่นคงใหม่ในความรัก"},
+  {n:"Two of Pentacles",i:"two_of_pentacles.png",m:"แบ่งเวลาไม่ลงตัว"},
+  {n:"Three of Pentacles",i:"three_of_pentacles.png",m:"ร่วมมือสร้างความสัมพันธ์"},
+  {n:"Four of Pentacles",i:"four_of_pentacles.png",m:"ความหวง ยึดติด"},
+  {n:"Five of Pentacles",i:"five_of_pentacles.png",m:"ความเหงา ขาดการดูแล"},
+  {n:"Six of Pentacles",i:"six_of_pentacles.png",m:"การให้และรับสมดุล"},
+  {n:"Seven of Pentacles",i:"seven_of_pentacles.png",m:"รอผลลัพธ์ความพยายาม"},
+  {n:"Eight of Pentacles",i:"eight_of_pentacles.png",m:"ตั้งใจพัฒนาความรัก"},
+  {n:"Nine of Pentacles",i:"nine_of_pentacles.png",m:"รักตัวเอง อิสระ"},
+  {n:"Ten of Pentacles",i:"ten_of_pentacles.png",m:"ความรักมั่นคงระยะยาว"},
+  {n:"Page of Pentacles",i:"page_of_pentacles.png",m:"เริ่มจริงจังกับความสัมพันธ์"},
+  {n:"Knight of Pentacles",i:"knight_of_pentacles.png",m:"ช้าแต่มั่นคง"},
+  {n:"Queen of Pentacles",i:"queen_of_pentacles.png",m:"ดูแล เอาใจใส่"},
+  {n:"King of Pentacles",i:"king_of_pentacles.png",m:"พร้อมสร้างอนาคตร่วมกัน"}
 ];
 
 const positions = [
@@ -167,9 +189,10 @@ function drawCards(){
   shuffled.forEach((c,i)=>{
     const d=document.createElement("div");
     d.className="card";
+    d.setAttribute("data-number", i+1);
     d.innerHTML=`
       <div class="position">${positions[i]}</div>
-      <img src="${baseImg+c.i}">
+      <img src="${baseImg+c.i}" alt="${c.n}">
       <h3>${c.n}</h3>
       <p>${c.m}</p>
     `;
